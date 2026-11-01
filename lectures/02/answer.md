@@ -13,7 +13,23 @@
 
 ## 宿題
 
-- 取り組んだレベル：基礎 / 実装 / 発展
-- 変えた設定やデータ：
+- 取り組んだレベル：基礎 
+- 変えた設定やデータ：num_train_epochsを30に変更した。
 - 結果（比較表や数字）：
-- ファインチューニングが向く場面・向かない場面についての考察：
+result = {
+    "config": {k: v for k, v in CONFIG.items() if k not in ("work_dir", "drive_dir")},
+    "versions": {m.__name__: m.__version__ for m in [transformers, peft, trl, torch]},
+    "method": "LoRA（量子化なし）",
+    "before": before_summary, "after": after_summary,
+    "regressed": regressed,
+    "knowledge": knowledge_rows,
+    "executed_training_myself": True,   # 講師の結果を使った場合は False にする
+}
+(WORK / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+print(json.dumps({k: v for k, v in result.items() if k != "knowledge"}, ensure_ascii=False, indent=2))
+if USE_DRIVE:
+    import shutil
+    for name in ["result.json", "eval_before.json", "eval_after.json", "test.jsonl", "gold.json"]:
+        shutil.copy(WORK / name, Path(CONFIG["drive_dir"]) / name)
+    print("Drive に保存しました:", CONFIG["drive_dir"])
+- ファインチューニングが向く場面・向かない場面についての考察：形式的な物には聞くが事実の判定などは難しい
